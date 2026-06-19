@@ -1,0 +1,60 @@
+{
+  "discovery": "citasdentista",
+  "hypotheses": [
+    {
+      "id": "H-01",
+      "risk": "alto",
+      "assumption": "Recepción adoptará el sistema como fuente única en hora pico, en vez de volver al cuaderno/WhatsApp si lo siente lento o complejo (riesgo-abandono-sistema, R-15).",
+      "hypothesis": "Creemos que la secretaria gestionará las citas dentro de una sola agenda compartida si agendar o modificar una cita le cuesta menos esfuerzo que su flujo actual de WhatsApp+papel, porque su dolor principal es el desorden de múltiples canales sin fuente de verdad.",
+      "metric": "% de citas de la semana registradas y gestionadas dentro de la fuente única vs. fuera de ella (WhatsApp/papel/llamada).",
+      "threshold": "En la semana 2 del piloto, >=80% de las citas quedan en la fuente única y recepción no reabre el cuaderno en hora pico.",
+      "experiment": "Concierge/piloto: durante 2 semanas recepción opera toda la agenda en hora pico sobre un prototipo (o agenda compartida configurada como fuente única); observamos su uso real y registramos qué se sale del sistema.",
+      "timebox": "2 semanas, 1 clínica, sin construir backend definitivo.",
+      "decision": "Si pasa -> construir el flujo de recepción tal cual. Si falla -> el flujo es demasiado pesado para hora pico; rediseñar la operación de recepción (R-15) antes de construir; si tras rediseño sigue fallando, pivotar el modelo de adopción. No avanzar a más features."
+    },
+    {
+      "id": "H-02",
+      "risk": "alto",
+      "assumption": "Los pacientes reservarán por sí mismos en el enlace en lugar de seguir escribiendo por WhatsApp o llamando.",
+      "hypothesis": "Creemos que el paciente completará su reserva de forma autónoma si recibe un enlace simple operable desde el móvil (R-14) con horarios reales visibles, porque hoy reserva a ciegas y sin confirmación y eso le genera incertidumbre.",
+      "metric": "% de pacientes contactados que completan la reserva por el enlace sin volver a escribir por WhatsApp ni llamar a recepción.",
+      "threshold": ">=40% de los pacientes a los que se ofrece el enlace reservan por sí mismos en las 2 semanas de prueba.",
+      "experiment": "Fake door / Mago de Oz: difundir un enlace de reserva real (formulario que captura datos y muestra horarios; detrás recepción confirma a mano) por los canales actuales; medir cuántos lo usan solos.",
+      "timebox": "2 semanas, enlace + planilla manual detrás, sin sistema completo.",
+      "decision": "Si pasa -> mantener el autoservicio como núcleo. Si falla -> el autoservicio no es deseable para este público; pivotar a que recepción agende y el sistema solo confirme/recuerde, en vez de descartar el MVP entero."
+    },
+    {
+      "id": "H-03",
+      "risk": "alto",
+      "assumption": "El recordatorio automático realmente reduce el no-show, no solo informa (es el supuesto causal del que cuelga la métrica de éxito del MVP).",
+      "hypothesis": "Creemos que los pacientes que reciben confirmación + recordatorio asistirán más que los que no, si el recordatorio llega antes de la cita con fecha/hora/doctor, porque parte del no-show se explica por olvido (olvido-cita).",
+      "metric": "Tasa de no-show = citas en estado «no asistió» ÷ citas confirmadas, comparada entre grupo con recordatorio y grupo sin recordatorio.",
+      "threshold": "La tasa de no-show del grupo con recordatorio es >=30% menor (en términos relativos) que la del grupo de control, en 3-4 semanas.",
+      "experiment": "A/B manual: a la mitad de las citas del periodo se les envía recordatorio a mano (WhatsApp/SMS) y a la otra mitad no (línea base); se comparan las tasas de no-show.",
+      "timebox": "3-4 semanas, envíos manuales, sin automatizar nada todavía.",
+      "decision": "Si pasa -> invertir en el recordatorio automático como motor del MVP. Si falla -> el recordatorio no mueve la asistencia; descartar el recordatorio como palanca principal e investigar la causa real del no-show antes de construirlo."
+    },
+    {
+      "id": "H-04",
+      "risk": "medio",
+      "assumption": "El sistema sostiene la operación de recepción en hora pico sin caídas (R-16); una caída devuelve todo al caos y mata la adopción.",
+      "hypothesis": "Creemos que recepción podrá agendar y modificar citas en hora pico sin interrupciones si la solución responde de forma estable bajo carga concurrente, porque la disponibilidad continua es condición para que no vuelvan al cuaderno.",
+      "metric": "% de operaciones de agendamiento/modificación completadas sin error ni caída durante las franjas de hora pico, y tiempo de respuesta por operación.",
+      "threshold": ">=99% de las operaciones en hora pico se completan sin error y cada una resuelve en <=3 segundos, durante 1 semana de prueba de carga.",
+      "experiment": "Prototipo + prueba de carga: simular la concurrencia de hora pico sobre el prototipo de recepción y medir errores y latencia.",
+      "timebox": "1 semana de prueba de carga sobre prototipo.",
+      "decision": "Si pasa -> la arquitectura prevista es suficiente. Si falla -> reforzar infraestructura y/o añadir un modo de respaldo offline antes de lanzar; no construir más funcionalidades encima hasta resolver la disponibilidad."
+    },
+    {
+      "id": "H-05",
+      "risk": "medio",
+      "assumption": "Los horarios mostrados al paciente reflejan la disponibilidad real en tiempo real (R-17); turnos desactualizados generan doble agendamiento y rompen la confianza.",
+      "hypothesis": "Creemos que el paciente confiará y reservará si nunca ve un turno que ya está ocupado, si el sistema bloquea el turno al instante de reservarlo, porque hoy desconfía de la disponibilidad y reserva a ciegas (desconfianza-disponibilidad).",
+      "metric": "Número de conflictos por datos desactualizados (turnos mostrados como libres que ya estaban ocupados / dobles agendamientos) durante el piloto.",
+      "threshold": "0 dobles agendamientos por datos desactualizados (o <1% de las reservas) en 2 semanas de piloto.",
+      "experiment": "Prototipo desechable: piloto con reserva concurrente real (varios pacientes + recepción agendando a la vez) y conteo de conflictos sobre el mismo turno.",
+      "timebox": "2 semanas, dentro del mismo piloto de H-01.",
+      "decision": "Si pasa -> la consistencia en tiempo real es suficiente para exponer la reserva pública. Si falla -> resolver la consistencia (bloqueo de turno en tiempo real) antes de abrir la reserva al paciente; no exponer el enlace público hasta lograrlo."
+    }
+  ]
+}
