@@ -36,11 +36,13 @@ El reporte generado esta dentro del proyecto en:
 
 ### Bloqueo por evidencia insuficiente
 
-![Gate bloqueado](evidencia-gate-bloqueo.png)
+<img width="1042" height="421" alt="image" src="https://github.com/user-attachments/assets/649a3f93-bbd5-4f87-85bc-072ca8bc2107" />
+
 
 ### Resolucion posterior
 
-![Gate resuelto](evidencia-gate-resolucion.png)
+<img width="1032" height="322" alt="image" src="https://github.com/user-attachments/assets/dad8bfb8-22a0-439e-860f-d3b4e0c07314" />
+
 
 ## Reflexion breve
 
